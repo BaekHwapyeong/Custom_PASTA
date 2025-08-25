@@ -1,0 +1,91 @@
+##### Unet config ####
+
+image_size: [96, 112]
+model_in_channels: 15
+out_channels_model: 15
+unet_dim: 64
+encoder_in_channels: 15
+out_channels_encoder: 15
+num_res_blocks: 4
+attention_resolutions: [16, 8, 4]
+num_heads: 4
+unet_dim_mults: [1, 2, 3, 4]
+dropout: 0
+dims: 2
+cond_emb_channels: 2048 # will always use condition unless it is null
+resblock_updown: true
+use_time_condition: true
+tab_cond_dim: 9
+use_tabular_cond_model: condition # condition
+use_tabular_cond_encoder: null # condition
+tabular_cond: true
+with_attention: True
+cond_apply_method: 'ada'
+
+
+##### Diffusion config ####
+
+timestep_respacing: ddim50
+beta_schedule: cosine
+timesteps: 500 #### 1000
+objective: START_X
+model_var_type: FIXED_LARGE
+gen_type: ddim
+condition: True
+loss_type: l1
+reconstructed_loss: l1
+recon_weight: 0.1
+rescale_intensity: True # rescale intensity to [-1, 1] during training
+
+
+##### Trainer config ####
+
+input_slice_channel: 15
+data_dir: "/mnt/peace_2/BHP/dataset/h5_paths_only/"
+train_batch_size: 4
+train_lr: !!float 5e-4
+weight_decay: !!float 1e-6
+train_num_steps: 20000 #### 80000
+save_and_sample_every: 500 #### 5
+num_samples: 16
+gradient_accumulate_every: 1
+ema_decay: 0.999
+amp: false
+fp16: true
+calculate_fid: true
+dataset: MRI2PET
+image_direction: axial
+num_slices: 96
+ROI_mask: '/mnt/peace_2/BHP/dataset/MNI/tpl-MNI152NLin6Asym_res-02_desc-brain_filled_mask_resize.nii.gz'
+# '/path/to/ROIs.nii.gz'
+model_cycling: true
+with_DTI: false
+dx_labels: ['CN', 'Dementia', 'MCI']
+results_folder: "/mnt/peace_2/BHP/PASTA/baseline_sase500"
+resume: null
+pretrain: null
+
+
+##### New fMRI and FC config ####
+use_fmri: false  # Set to true to enable fMRI data loading
+
+# Enable/disable FC (functional connectivity) data loading and usage  
+use_fc: false    # Set to true to enable FC data loading
+
+# Enable/disable fMRI conditioning in the model
+use_fmri_cond: false  # Set to true to use fMRI data as additional conditioning
+
+# Enable/disable FC conditioning in the model  
+use_fc_cond: false    # Set to true to use FC data as additional conditioning
+
+# Feature dimensions for fMRI and FC encoders
+fmri_feature_dim: 512   # Output dimension of fMRI encoder
+fc_feature_dim: 512     # Output dimension of FC encoder
+
+###### evaluation config #####
+
+test_batch_size: 4
+eval_dataset: ADNI
+eval_resolution: [96, 112, 96]
+eval_mode: true # false
+synthesis: true # true
